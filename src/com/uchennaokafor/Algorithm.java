@@ -17,6 +17,7 @@ public class Algorithm {
         if (elitism) {
             newPopulation.setPermutationAt(0, pop.getFittest());
         }
+
         // Crossover population
         int elitismOffset;
         if (elitism) {
@@ -27,15 +28,20 @@ public class Algorithm {
         // Loop over the population size and create new individuals with
         // crossover
         for (int i = elitismOffset; i < pop.getPopulationSize(); i++) {
-            Permutation p1 = tournamentSelection(pop);
-            Permutation p2 = tournamentSelection(pop);
-            Permutation newPermutation = crossover(p1, p2);
-            newPopulation.setPermutationAt(i, newPermutation);
+            Permutation offspring;
+
+            do {
+                Permutation p1 = tournamentSelection(pop);
+                Permutation p2 = tournamentSelection(pop);
+                offspring = crossover(p1, p2);
+            } while (offspring == null);
+
+            newPopulation.setPermutationAt(i, offspring);
         }
 
         // Mutate population
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i++) {
-            //mutate(newPopulation.getIndividual(i));
+            mutate(newPopulation.getPermutationAt(i));
         }
 
         return newPopulation;
@@ -43,10 +49,10 @@ public class Algorithm {
 
     // Crossover individuals
     private static Permutation crossover(Permutation parent1, Permutation parent2) {
-        int size = parent1.getGenes().length;
+        int chromosomeLength = parent1.getGenes().length;
 
-        Gene[] genes = new Gene[size];
-        for (int i = 0; i < size; i++) {
+        Gene[] genes = new Gene[chromosomeLength];
+        for (int i = 0; i < chromosomeLength; i++) {
             Gene gene;
 
             // Crossover
@@ -56,9 +62,23 @@ public class Algorithm {
                 gene = parent2.getGene(i);
             }
 
+            if (isGeneExists(gene, genes)) {
+                return null;
+            }
             genes[i] = gene;
         }
+
         return new Permutation(genes);
+    }
+
+    private static boolean isGeneExists(Gene targetGene, Gene[] genes) {
+        for (Gene gene : genes) {
+            if (gene != null && gene.equals(targetGene)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Mutate an individual
@@ -67,9 +87,7 @@ public class Algorithm {
         for (int i = 0; i < permutation.getGenes().length; i++) {
             if (Math.random() <= mutationRate) {
                 // Create random gene
-
-                //Call a method to generate gene
-                permutation.mutateGene(i, new Gene(1,1));
+                //permutation.mutateGene(i);
             }
         }
     }
