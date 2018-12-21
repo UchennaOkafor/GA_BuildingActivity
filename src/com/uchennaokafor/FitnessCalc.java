@@ -12,11 +12,11 @@ public class FitnessCalc {
         { 33, 29, 22, 25, 25, 25, 33},
     };
 
-    public static int getGeneScore(Gene gene) {
-        int activityIndex = gene.getActivity() - 1;
-        int buildingIndex = gene.getBuilding() - 1;
-        //Subtracting one because arrays start at 0
+    public static float getGeneScore(Gene gene) {
+        int activityIndex = gene.getActivity() + 1;
+        int buildingIndex = gene.getBuilding() + 1;
+        //Adding one because arrays start at 0
 
-        return suitabilityIndicies[activityIndex][buildingIndex];
+        return suitabilityIndicies[buildingIndex][activityIndex];
     }
 }

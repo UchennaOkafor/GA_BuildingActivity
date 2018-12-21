@@ -33,13 +33,17 @@ public class Permutation {
         return genes;
     }
 
-    public void setGenes(Gene[] genes) {
-        this.genes = genes;
+    public Gene getGene(int index) {
+        return genes[index];
+    }
+
+    public void mutateGene(int index, Gene newGene) {
+        this.genes[index] = newGene;
     }
 
     @Override
     public String toString() {
-        return "Permutation{" +
+        return "Permutation {" +
                 "genes=" + Arrays.toString(genes) +
                 '}';
     }
