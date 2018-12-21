@@ -6,16 +6,21 @@ import java.util.Set;
 
 public class Population {
 
+    private int size;
     private Permutation[] permutations;
     private Random rand;
 
-    public Population(int populationSize) {
-        rand = new Random();
-        permutations = new Permutation[populationSize];
-        generatePopulation(populationSize);
+    public Population(int size, boolean initialize) {
+        this.rand = new Random();
+        this.size = size;
+        this.permutations = new Permutation[size];
+
+        if (initialize) {
+            initializePopulation(size);
+        }
     }
 
-    private void generatePopulation(int populationSize) {
+    private void initializePopulation(int populationSize) {
         int maxBuildings = 8 - 1;
         int maxActivities = 7 - 1;
         int chromosomeLength = maxBuildings + 1;
@@ -28,8 +33,8 @@ public class Population {
                 Gene gene;
 
                 do {
-                    int building = rand.nextInt(maxBuildings);
-                    int activity = rand.nextInt(maxActivities);
+                    int building = this.rand.nextInt(maxBuildings);
+                    int activity = this.rand.nextInt(maxActivities);
                     gene = new Gene(activity, building);
                 } while (hashCodeSet.contains(gene.hashCode()));
 
@@ -37,19 +42,31 @@ public class Population {
                 genes[j] = gene;
             }
 
-            permutations[i] = new Permutation(genes);
+            this.permutations[i] = new Permutation(genes);
         }
     }
 
     public Permutation getFittest() {
-        Permutation fittest = permutations[0];
+        Permutation fittest = this.permutations[0];
         // Loop through individuals to find fittest
-        for (Permutation permutation : permutations) {
+        for (Permutation permutation : this.permutations) {
             if (fittest.getFitnessScore() <= permutation.getFitnessScore()) {
                 fittest = permutation;
             }
         }
 
         return fittest;
+    }
+
+    public void setPermutationAt(int index, Permutation permutation) {
+        this.permutations[index] = permutation;
+    }
+
+    public Permutation getPermutationAt(int index) {
+        return this.permutations[index];
+    }
+
+    public int getPopulationSize() {
+        return size;
     }
 }

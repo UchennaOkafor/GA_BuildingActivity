@@ -1,7 +1,5 @@
 package com.uchennaokafor;
 
-import sun.security.x509.GeneralName;
-
 public class Algorithm {
     /* GA parameters */
     private static final double uniformRate = 0.5;
@@ -13,11 +11,11 @@ public class Algorithm {
 
     // Evolve a population
     public static Population evolvePopulation(Population pop) {
-        Population newPopulation = new Population(pop.size(), false);
+        Population newPopulation = new Population(pop.getPopulationSize(), false);
 
         // Keep our best individual
         if (elitism) {
-            newPopulation.saveIndividual(0, pop.getFittest());
+            newPopulation.setPermutationAt(0, pop.getFittest());
         }
         // Crossover population
         int elitismOffset;
@@ -28,16 +26,16 @@ public class Algorithm {
         }
         // Loop over the population size and create new individuals with
         // crossover
-        for (int i = elitismOffset; i < pop.size(); i++) {
-            Individual indiv1 = tournamentSelection(pop);
-            Individual indiv2 = tournamentSelection(pop);
-            Individual newIndiv = crossover(indiv1, indiv2);
-            newPopulation.saveIndividual(i, newIndiv);
+        for (int i = elitismOffset; i < pop.getPopulationSize(); i++) {
+            Permutation p1 = tournamentSelection(pop);
+            Permutation p2 = tournamentSelection(pop);
+            Permutation newPermutation = crossover(p1, p2);
+            newPopulation.setPermutationAt(i, newPermutation);
         }
 
         // Mutate population
-        for (int i = elitismOffset; i < newPopulation.size(); i++) {
-            mutate(newPopulation.getIndividual(i));
+        for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i++) {
+            //mutate(newPopulation.getIndividual(i));
         }
 
         return newPopulation;
@@ -74,5 +72,19 @@ public class Algorithm {
                 permutation.mutateGene(i, new Gene(1,1));
             }
         }
+    }
+
+    // Select individuals for crossover
+    private static Permutation tournamentSelection(Population pop) {
+        // Create a tournament population
+        Population tournament = new Population(tournamentSize, false);
+        // For each place in the tournament get a random individual
+        for (int i = 0; i < tournamentSize; i++) {
+            int randomId = (int) (Math.random() * pop.getPopulationSize());
+            tournament.setPermutationAt(i, pop.getPermutationAt(randomId));
+        }
+
+        // Get the fittest
+        return tournament.getFittest();
     }
 }

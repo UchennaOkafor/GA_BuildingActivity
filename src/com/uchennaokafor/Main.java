@@ -1,16 +1,22 @@
 package com.uchennaokafor;
 
-import java.util.Objects;
-
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(Objects.hash(5, 1));
-        System.out.println(Objects.hash(1, 5));
+        // Create an initial population
+        Population population = new Population(50, true);
 
-        Population population = new Population(50);
-        Permutation permutation = population.getFittest();
-        System.out.println(permutation);
-        System.out.println(permutation.getFitnessScore());
+        // Evolve our population until we reach an optimum solution
+        int generationCount = 0;
+
+        while (generationCount < 100) {
+            generationCount++;
+            System.out.println("Generation: "+ generationCount +" Fittest: "+ population.getFittest().getFitnessScore());
+            population = Algorithm.evolvePopulation(population);
+        }
+
+        System.out.println("Generation: "+ generationCount);
+        System.out.println("Genes:");
+        System.out.println(population.getFittest());
     }
 }
