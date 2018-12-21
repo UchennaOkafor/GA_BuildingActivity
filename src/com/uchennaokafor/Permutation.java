@@ -1,9 +1,6 @@
 package com.uchennaokafor;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -14,22 +11,34 @@ public class Permutation {
      */
     private Gene[] genes;
     private Random rand;
-    private Set<Integer> hashCodeSet;
-
-    private final int MAX_BUILDINGS = 8 - 1;
-    private final int MAX_ACTIVITIES = 7 - 1;
-    private final int CHROMOSOME_LENGTH = MAX_BUILDINGS + 1;
+    private List<Integer> availableBuildings;
+    private List<Integer> availableActivities;
 
     public Permutation() {
-        this.rand = new Random();
-        this.hashCodeSet = new HashSet<>();
+        initialize();
         generateGenes();
     }
 
     public Permutation(Gene[] genes) {
+        initialize();
         this.genes = genes;
+    }
+
+    private void initialize() {
         this.rand = new Random();
-        this.hashCodeSet = new HashSet<>();
+        this.availableBuildings = new ArrayList<>();
+        this.availableActivities = new ArrayList<>();
+
+        int MAX_BUILDINGS = 8;
+        int MAX_ACTIVITIES = 7;
+
+        for (int i = 0; i < MAX_BUILDINGS - 1; i++) {
+            availableBuildings.add(i);
+        }
+
+        for (int i = 0; i < MAX_ACTIVITIES - 1; i++) {
+            availableActivities.add(i);
+        }
     }
 
     /**
@@ -46,10 +55,6 @@ public class Permutation {
         return score;
     }
 
-    public boolean isGeneExist(Gene gene) {
-        return hashCodeSet.contains(gene.hashCode());
-    }
-
     public Gene[] getGenes() {
         return genes;
     }
@@ -63,26 +68,32 @@ public class Permutation {
     }
 
     public void generateGenes() {
-        Gene[] genes = new Gene[CHROMOSOME_LENGTH];
+        List<Gene> genes = new ArrayList<>();
 
-        for (int i = 0; i < CHROMOSOME_LENGTH; i++) {
-            genes[i] = generateUniqueGene();
-        }
+        do {
+            Gene gene = generateUniqueGene();
+            if (gene == null) {
+                break;
+            } else {
+                genes.add(gene);
+            }
+        } while (true);
 
-        this.genes = genes;
+        this.genes = genes.toArray(new Gene[]{});
     }
 
     private Gene generateUniqueGene() {
-        Gene gene;
+        if (availableActivities.size() == 0 || availableBuildings.size() == 0) {
+            return null;
+        }
 
-        do {
-            int building = this.rand.nextInt(MAX_BUILDINGS);
-            int activity = this.rand.nextInt(MAX_ACTIVITIES);
-            gene = new Gene(activity, building);
-        } while (this.hashCodeSet.contains(gene.hashCode()));
+        int randBuildingIndex = this.rand.nextInt(availableBuildings.size());
+        int randActivityIndex = this.rand.nextInt(availableActivities.size());
 
-        this.hashCodeSet.add(gene.hashCode());
-        return gene;
+        int randBuilding = availableBuildings.remove(randBuildingIndex);
+        int randActivity = availableActivities.remove(randActivityIndex);
+
+        return new Gene(randActivity, randBuilding);
     }
 
     @Override

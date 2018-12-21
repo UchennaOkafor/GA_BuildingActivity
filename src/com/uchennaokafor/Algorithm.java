@@ -34,6 +34,11 @@ public class Algorithm {
                 Permutation p1 = tournamentSelection(pop);
                 Permutation p2 = tournamentSelection(pop);
                 offspring = crossover(p1, p2);
+
+                System.out.println("What");
+                System.out.println(p1);
+                System.out.println(p2);
+                break;
             } while (offspring == null);
 
             newPopulation.setPermutationAt(i, offspring);
@@ -62,7 +67,7 @@ public class Algorithm {
                 gene = parent2.getGene(i);
             }
 
-            if (isGeneExists(gene, genes)) {
+            if (isGeneCompatible(gene, genes)) {
                 return null;
             }
             genes[i] = gene;
@@ -71,14 +76,14 @@ public class Algorithm {
         return new Permutation(genes);
     }
 
-    private static boolean isGeneExists(Gene targetGene, Gene[] genes) {
+    private static boolean isGeneCompatible(Gene targetGene, Gene[] genes) {
         for (Gene gene : genes) {
-            if (gene != null && gene.equals(targetGene)) {
-                return true;
+            if (gene != null && gene.isCompatible(targetGene)) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     // Mutate an individual

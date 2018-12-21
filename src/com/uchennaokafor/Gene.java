@@ -1,7 +1,5 @@
 package com.uchennaokafor;
 
-import java.util.Objects;
-
 public class Gene {
 
     private int activity;
@@ -36,17 +34,8 @@ public class Gene {
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Gene)) return false;
-        Gene gene = (Gene) o;
-        return getActivity() == gene.getActivity() &&
-                getBuilding() == gene.getBuilding();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getActivity(), getBuilding());
+    public boolean isCompatible(Gene gene) {
+        return ! (getActivity() == gene.getActivity() ||
+                getBuilding() == gene.getBuilding());
     }
 }
