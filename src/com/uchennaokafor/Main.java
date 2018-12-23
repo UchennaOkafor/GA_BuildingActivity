@@ -14,7 +14,7 @@ public class Main {
         do {
             System.out.printf("Generation: %d Fittest: %d \n", generationCount, population.getFittest().getFitnessScore());
             population = Algorithm.evolvePopulation(population);
-        } while(generationCount++ < MAX_GENERATIONS);
+        } while(++generationCount < MAX_GENERATIONS);
 
         System.out.printf("\nFinal Generation: %d \n", generationCount);
         System.out.printf("The fittest permutation is: %s \n", population.getFittest());

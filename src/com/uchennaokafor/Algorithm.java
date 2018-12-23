@@ -4,7 +4,7 @@ public class Algorithm {
     /* GA parameters */
     private static final double UNIFORM_RATE = 0.5;
     private static final double MUTATION_RATE = 0.015;
-    private static final int TOURNAMENT_SIZE = 5;
+    private static final int TOURNAMENT_SIZE = 10;
     private static final double CROSSOVER_RATE = 0.4;
     private static final boolean ELITISM = true;
 
