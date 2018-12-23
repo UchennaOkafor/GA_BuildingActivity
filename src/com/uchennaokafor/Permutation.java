@@ -1,15 +1,17 @@
 package com.uchennaokafor;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
- *
+ * Represents a chromosome
  */
 public class Permutation {
     /**
      *
      */
+    private final int MAX_BUILDINGS = 8;
+    private final int MAX_ACTIVITIES = 7;
+
     private Gene[] genes;
     private Random rand;
     private List<Integer> availableBuildings;
@@ -35,9 +37,6 @@ public class Permutation {
         this.availableBuildings = new ArrayList<>();
         this.availableActivities = new ArrayList<>();
 
-        final int MAX_BUILDINGS = 8;
-        final int MAX_ACTIVITIES = 7;
-
         for (int i = 0; i < MAX_BUILDINGS; i++) {
             availableBuildings.add(i);
         }
@@ -50,28 +49,6 @@ public class Permutation {
         Collections.shuffle(availableBuildings);
     }
 
-    /**
-     *
-     * @return
-     */
-    public int getFitnessScore() {
-        int score = 0;
-
-        for (Gene gene : genes) {
-            score += FitnessCalc.getGeneScore(gene);
-        }
-
-        return score;
-    }
-
-    public Gene[] getGenes() {
-        return genes;
-    }
-
-    public Gene getGene(int index) {
-        return genes[index];
-    }
-
     public void mutateGene(int index) {
         int newBuildingNo = this.availableBuildings.remove(0);
         int geneBuildingNo = this.genes[index].getBuilding();
@@ -81,27 +58,24 @@ public class Permutation {
     }
 
     private void generateRandomGenes() {
-        List<Gene> genes = new ArrayList<>();
+        List<Gene> chromosome = new ArrayList<>();
+        Gene gene;
 
         do {
-            Gene gene = generateUniqueGene();
-            if (gene == null) {
-                break;
-            } else {
-                genes.add(gene);
+            gene = generateUniqueGene();
+            if (gene != null) {
+                chromosome.add(gene);
             }
-        } while (true);
+        } while (gene != null);
 
-        this.genes = genes.toArray(new Gene[]{});
+        this.genes = chromosome.toArray(new Gene[]{});
     }
 
     public boolean isPermutationValid() {
         for (Gene gene1 : this.genes) {
             for (Gene gene2 : this.genes) {
-                if (gene1 != gene2) {
-                    if (isIncompatible(gene1, gene2)) {
-                        return false;
-                    }
+                if (gene1 != gene2 && isIncompatible(gene1, gene2)) {
+                    return false;
                 }
             }
         }
@@ -126,6 +100,24 @@ public class Permutation {
         int randActivity = availableActivities.remove(randActivityIndex);
 
         return new Gene(randActivity, randBuilding);
+    }
+
+    public int getFitnessScore() {
+        int score = 0;
+
+        for (Gene gene : this.genes) {
+            score += FitnessCalc.getGeneScore(gene);
+        }
+
+        return score;
+    }
+
+    public Gene[] getGenes() {
+        return this.genes;
+    }
+
+    public Gene getGene(int index) {
+        return this.genes[index];
     }
 
     @Override

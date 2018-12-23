@@ -1,7 +1,5 @@
 package com.uchennaokafor;
 
-import java.util.Arrays;
-
 public class Population {
 
     private Permutation[] permutations;
@@ -16,8 +14,7 @@ public class Population {
 
     private void initializePopulation(int populationSize) {
         for (int i = 0; i < populationSize; i++) {
-            Permutation p = new Permutation();
-            this.permutations[i] = p;
+            this.permutations[i] = new Permutation();
         }
     }
 
@@ -42,6 +39,6 @@ public class Population {
     }
 
     public int getPopulationSize() {
-        return permutations.length;
+        return this.permutations.length;
     }
 }
