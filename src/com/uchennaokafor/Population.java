@@ -1,5 +1,7 @@
 package com.uchennaokafor;
 
+import java.util.Arrays;
+
 public class Population {
 
     private Permutation[] permutations;

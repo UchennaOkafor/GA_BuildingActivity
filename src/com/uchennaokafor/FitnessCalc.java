@@ -1,6 +1,7 @@
 package com.uchennaokafor;
 
 public class FitnessCalc {
+
     private static int[][] suitabilityIndicies = new int[][]{
         { 35, 10, 12, 7, 12, 24, 15},
         { 30, 14, 16, 25, 25, 29, 28},
@@ -12,10 +13,9 @@ public class FitnessCalc {
         { 33, 29, 22, 25, 25, 25, 33},
     };
 
-    public static float getGeneScore(Gene gene) {
-        int activityIndex = gene.getActivity() + 1;
-        int buildingIndex = gene.getBuilding() + 1;
-        //Adding one because arrays start at 0
+    public static int getGeneScore(Gene gene) {
+        int activityIndex = gene.getActivity();
+        int buildingIndex = gene.getBuilding();
 
         return suitabilityIndicies[buildingIndex][activityIndex];
     }
