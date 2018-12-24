@@ -50,11 +50,34 @@ public class Permutation {
     }
 
     public void mutateGene(int index) {
-        int newBuildingNo = this.availableBuildings.remove(0);
-        int geneBuildingNo = this.genes[index].getBuilding();
-        this.availableBuildings.add(geneBuildingNo);
+        if (rand.nextBoolean()) {
+            int newBuildingNo = this.availableBuildings.remove(0);
+            int geneBuildingNo = this.genes[index].getBuilding();
+            this.availableBuildings.add(geneBuildingNo);
 
-        this.genes[index].setBuilding(newBuildingNo);
+            this.genes[index].setBuilding(newBuildingNo);
+        } else {
+            int randIndex = randomInt(index);
+
+            Gene gene = new Gene(this.genes[index].getActivity(), this.genes[index].getBuilding());
+            Gene randGene = new Gene(this.genes[randIndex].getActivity(), this.genes[randIndex].getBuilding());
+
+            this.genes[index].setBuilding(randGene.getBuilding());
+            this.genes[index].setActivity(gene.getActivity());
+
+            this.genes[randIndex].setBuilding(gene.getBuilding());
+            this.genes[randIndex].setActivity(randGene.getActivity());
+        }
+    }
+
+    private int randomInt(int index) {
+        int a;
+
+        do {
+            a = this.rand.nextInt(this.genes.length);
+        } while (a == index);
+
+        return a;
     }
 
     private void generateRandomGenes() {
@@ -81,6 +104,14 @@ public class Permutation {
         }
 
         return true;
+    }
+
+    public List<Gene> getGenesFromFront(int amount) {
+        return new ArrayList<>(Arrays.asList(genes).subList(0, amount));
+    }
+
+    public List<Gene> getGenesFromBack(int amount) {
+        return new ArrayList<>(Arrays.asList(genes).subList(genes.length - amount, genes.length));
     }
 
     private boolean isIncompatible(Gene gene1, Gene gene2) {
