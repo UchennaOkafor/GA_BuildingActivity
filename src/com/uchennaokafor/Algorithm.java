@@ -1,28 +1,16 @@
 package com.uchennaokafor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Algorithm {
     /* GA parameters */
-    private static final double MUTATION_RATE = 0.025;
+    private static final double MUTATION_RATE = 0.015;
     private static final boolean ELITISM = true;
-    private static final Random RANDOM = new Random();
-
-    /* Public methods */
+    private static Random RAND = new Random();
 
     // Evolve a population
-    public static Population evolvePopulation(Population pop, int fittestScore, LocalDateTime endTime) {
-        Population newPop = evolve(pop);
-
-        while (fittestScore >= newPop.getFittest().getFitnessScore() &&
-                ! LocalDateTime.now().isAfter(endTime)) {
-
-            newPop = evolve(pop);
-        }
-
-        return newPop;
+    public static Population evolvePopulation(Population pop) {
+        return evolve(pop);
     }
 
     private static Population evolve(Population pop) {
@@ -42,14 +30,14 @@ public class Algorithm {
         }
         // Loop over the population size and create new individuals with crossover
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i++) {
-            Permutation offspring;
+            double[] weights = new double[pop.getPopulationSize()];
+            for (int j = 0; j < pop.getPopulationSize(); j++) {
+                weights[j] = pop.getPermutationAt(j).getFitnessScore();
+            }
 
-            do {
-                Permutation p1 = tournamentSelection(pop);
-                Permutation p2 = tournamentSelection(pop);
-                offspring = crossover(p1, p2);
+            int[] indexes = StochasticUniversalSampling.execute(weights, 2);
 
-            } while (offspring == null);
+            Permutation offspring = crossover(pop.getPermutationAt(indexes[0]), pop.getPermutationAt(indexes[1]));
 
             newPopulation.setPermutationAt(i, offspring);
         }
@@ -62,43 +50,41 @@ public class Algorithm {
         return newPopulation;
     }
 
-    private static boolean isAccepted(Gene targetGene, List<Gene> chromosome) {
-        for (Gene gene : chromosome) {
-            if (gene.getBuilding() == targetGene.getBuilding()
-                    || gene.getActivity() == targetGene.getActivity()) {
-                return false;
-            }
-        }
+    private static int[] generateCrossoverPoint(Permutation parent) {
+        int amountOfGenes = parent.getGenes().length;
+        int startIndex = RAND.nextInt(amountOfGenes / 2);
+        int stopIndex, distance;
 
-        return true;
+        do {
+            stopIndex = RAND.nextInt(amountOfGenes);
+            distance = stopIndex - startIndex;
+
+        } while (distance <= 2 || distance >= 5);
+
+        return new int[] {startIndex, stopIndex};
     }
 
     // Crossover individuals
     private static Permutation crossover(Permutation parent1, Permutation parent2) {
-        int chromosomeLength = parent1.getGenes().length;
-        //TODO, select random percentage of gene, e.g. 70%, and then see if you can take the remaining 30% from the other parent
-        //Randomly choose which parent the 70% is taken from
-        int amountToTake = (int) Math.ceil((chromosomeLength * 20f) / 100f);
+        int[] crossoverPoints = generateCrossoverPoint(parent1);
+        int startIndex = crossoverPoints[0];
+        int stopIndex = crossoverPoints[1];
 
-        List<Gene> mainGenes = parent1.getGenesAtRandom(amountToTake);
+        List<Gene> genes = new ArrayList<>();
+        List<Gene> availableGenes = new ArrayList<>(Arrays.asList(parent2.getGenes()));
 
-        for (Gene gene : parent2.getGenes()) {
-            if (isAccepted(gene, mainGenes)) {
-                mainGenes.add(gene);
-            }
+        for (int i = startIndex; i < stopIndex; i++) {
+            Gene gene = parent1.getGene(i);
+            genes.add(gene);
+            availableGenes.removeIf(g -> g.getActivity() == gene.getActivity());
         }
 
-        if (mainGenes.size() == parent1.getGenes().length) {
-            Permutation p = new Permutation(mainGenes.toArray(new Gene[] {}));
-
-            if (p.isPermutationValid()) {
-                return p;
-            } else {
-                //System.out.println("Invalid: " + p);
-            }
+        while (genes.size() != parent1.getGenes().length) {
+            int randIndex = RAND.nextInt(availableGenes.size());
+            genes.add(availableGenes.remove(randIndex));
         }
 
-        return null;
+        return new Permutation(genes.toArray(new Gene[] {}));
     }
 
     // Mutate an individual
@@ -110,19 +96,5 @@ public class Algorithm {
                 permutation.mutateGene(i);
             }
         }
-    }
-
-    // Select individuals for crossover
-    private static Permutation tournamentSelection(Population pop) {
-        // Create a tournament population
-        Population tournament = new Population(pop.getPopulationSize() / 2, false);
-        // For each place in the tournament get a random individual
-        for (int i = 0; i < pop.getPopulationSize() / 2; i++) {
-            int randomId = (int) (Math.random() * pop.getPopulationSize());
-            tournament.setPermutationAt(i, pop.getPermutationAt(randomId));
-        }
-
-        // Get the fittest
-        return tournament.getFittest();
     }
 }

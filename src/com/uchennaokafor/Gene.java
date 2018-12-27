@@ -53,6 +53,9 @@ public class Gene {
     @Override
     public String toString() {
         return String.format("{Building=%d, Activity=%d}",
-                getUserFriendlyBuilding(),getUserFriendlyActivity());
+                getBuilding(),getActivity());
+
+//        return String.format("{Building=%d, Activity=%d}",
+//                getUserFriendlyBuilding(),getUserFriendlyActivity());
     }
 }

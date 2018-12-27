@@ -45,29 +45,21 @@ public class Permutation {
             availableActivities.add(i);
         }
 
-        Collections.shuffle(availableActivities);
-        Collections.shuffle(availableBuildings);
+        Collections.shuffle(availableActivities, this.rand);
+        Collections.shuffle(availableBuildings, this.rand);
     }
 
     public void mutateGene(int index) {
-        //if (rand.nextBoolean()) {
-            int newBuildingNo = this.availableBuildings.remove(0);
-            int geneBuildingNo = this.genes[index].getBuilding();
-            this.availableBuildings.add(geneBuildingNo);
+        int anotherRandomIndex = randomInt(index);
 
-            this.genes[index].setBuilding(newBuildingNo);
-//        } else {
-//            int randIndex = randomInt(index);
-//
-//            Gene gene = new Gene(this.genes[index].getActivity(), this.genes[index].getBuilding());
-//            Gene randGene = new Gene(this.genes[randIndex].getActivity(), this.genes[randIndex].getBuilding());
-//
-//            this.genes[index].setBuilding(randGene.getBuilding());
-//            this.genes[index].setActivity(gene.getActivity());
-//
-//            this.genes[randIndex].setBuilding(gene.getBuilding());
-//            this.genes[randIndex].setActivity(randGene.getActivity());
-//        }
+        Gene gene = new Gene(this.genes[index].getActivity(), this.genes[index].getBuilding());
+        Gene randGene = new Gene(this.genes[anotherRandomIndex].getActivity(), this.genes[anotherRandomIndex].getBuilding());
+
+        this.genes[index].setBuilding(randGene.getBuilding());
+        this.genes[index].setActivity(gene.getActivity());
+
+        this.genes[anotherRandomIndex].setBuilding(gene.getBuilding());
+        this.genes[anotherRandomIndex].setActivity(randGene.getActivity());
     }
 
     private int randomInt(int index) {
@@ -95,9 +87,13 @@ public class Permutation {
     }
 
     public boolean isPermutationValid() {
+        if (this.genes.length != MAX_ACTIVITIES) {
+            return false;
+        }
+
         for (Gene gene1 : this.genes) {
             for (Gene gene2 : this.genes) {
-                if (gene1 != gene2 && isIncompatible(gene1, gene2)) {
+                if (gene1 != gene2 && gene1.getActivity() == gene2.getActivity()) {
                     return false;
                 }
             }
@@ -106,31 +102,15 @@ public class Permutation {
         return true;
     }
 
-    public List<Gene> getGenesAtRandom(int amount) {
-        List<Gene> randList = Arrays.asList(genes);
-        Collections.shuffle(randList);
-
-        return new ArrayList<>(randList.subList(0, amount));
-    }
-
-    public List<Gene> getGenesFromBack(int amount) {
-        return new ArrayList<>(Arrays.asList(genes).subList(genes.length - amount, genes.length));
-    }
-
-    private boolean isIncompatible(Gene gene1, Gene gene2) {
-        return gene1.getActivity() == gene2.getActivity() ||
-                gene1.getBuilding() == gene2.getBuilding();
-    }
-
     private Gene generateUniqueGene() {
-        if (availableActivities.size() == 0 || availableBuildings.size() == 0) {
+        if (availableActivities.size() == 0) {
             return null;
         }
 
         int randBuildingIndex = this.rand.nextInt(availableBuildings.size());
         int randActivityIndex = this.rand.nextInt(availableActivities.size());
 
-        int randBuilding = availableBuildings.remove(randBuildingIndex);
+        int randBuilding = availableBuildings.get(randBuildingIndex);
         int randActivity = availableActivities.remove(randActivityIndex);
 
         return new Gene(randActivity, randBuilding);
