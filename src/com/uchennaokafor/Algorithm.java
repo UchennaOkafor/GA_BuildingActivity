@@ -1,23 +1,24 @@
 package com.uchennaokafor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
 public class Algorithm {
     /* GA parameters */
-    private static final double UNIFORM_RATE = 0.5;
-    private static final double MUTATION_RATE = 0.015;
-    private static final double CROSSOVER_RATE = 0.4;
+    private static final double MUTATION_RATE = 0.025;
     private static final boolean ELITISM = true;
     private static final Random RANDOM = new Random();
 
     /* Public methods */
 
     // Evolve a population
-    public static Population evolvePopulation(int fittestScore, Population pop) {
+    public static Population evolvePopulation(Population pop, int fittestScore, LocalDateTime endTime) {
         Population newPop = evolve(pop);
 
-        while (fittestScore >= newPop.getFittest().getFitnessScore()) {
+        while (fittestScore >= newPop.getFittest().getFitnessScore() &&
+                ! LocalDateTime.now().isAfter(endTime)) {
+
             newPop = evolve(pop);
         }
 
@@ -28,23 +29,19 @@ public class Algorithm {
         Population newPopulation = new Population(pop.getPopulationSize(), false);
 
         // Keep our best individual
-        List<Permutation> topHalf = pop.getHalfTopFittest();
         if (ELITISM) {
-            for (int i = 0; i < topHalf.size(); i++) {
-                newPopulation.setPermutationAt(i, topHalf.get(i));
-            }
+            newPopulation.setPermutationAt(0, pop.getFittest());
         }
 
         // Crossover population
         int elitismOffset;
         if (ELITISM) {
-            elitismOffset = topHalf.size();
+            elitismOffset = 1;
         } else {
             elitismOffset = 0;
         }
-        // Loop over the population size and create new individuals with
-        // crossover
-        for (int i = elitismOffset; i < pop.getPopulationSize(); i++) {
+        // Loop over the population size and create new individuals with crossover
+        for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i++) {
             Permutation offspring;
 
             do {
@@ -82,33 +79,24 @@ public class Algorithm {
         //TODO, select random percentage of gene, e.g. 70%, and then see if you can take the remaining 30% from the other parent
         //Randomly choose which parent the 70% is taken from
         int amountToTake = (int) Math.ceil((chromosomeLength * 20f) / 100f);
-        int amountNeeded = chromosomeLength - amountToTake;
-        boolean flag = RANDOM.nextBoolean();
 
-        if (true) {
-            List<Gene> mainGenes = parent1.getGenesFromFront(amountToTake);
+        List<Gene> mainGenes = parent1.getGenesAtRandom(amountToTake);
 
-            int count = 0;
-            for (Gene gene : parent2.getGenes()) {
-                if (isAccepted(gene, mainGenes)) {
-                    mainGenes.add(gene);
-                    count++;
-                }
-            }
-
-            if (count >= 1) {
-                Permutation p = new Permutation(mainGenes.toArray(new Gene[] {}));
-
-                if (p.isPermutationValid()) {
-                    //System.out.println("Valid : "+ count + " " + System.currentTimeMillis());
-                    return p;
-                }
+        for (Gene gene : parent2.getGenes()) {
+            if (isAccepted(gene, mainGenes)) {
+                mainGenes.add(gene);
             }
         }
-//        else {
-//            parent1.getGenesFromBack(amountToTake);
-//            parent2.getGenesFromFront(amountToTake);
-//        }
+
+        if (mainGenes.size() == parent1.getGenes().length) {
+            Permutation p = new Permutation(mainGenes.toArray(new Gene[] {}));
+
+            if (p.isPermutationValid()) {
+                return p;
+            } else {
+                //System.out.println("Invalid: " + p);
+            }
+        }
 
         return null;
     }

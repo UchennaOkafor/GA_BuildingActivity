@@ -50,24 +50,24 @@ public class Permutation {
     }
 
     public void mutateGene(int index) {
-        if (rand.nextBoolean()) {
+        //if (rand.nextBoolean()) {
             int newBuildingNo = this.availableBuildings.remove(0);
             int geneBuildingNo = this.genes[index].getBuilding();
             this.availableBuildings.add(geneBuildingNo);
 
             this.genes[index].setBuilding(newBuildingNo);
-        } else {
-            int randIndex = randomInt(index);
-
-            Gene gene = new Gene(this.genes[index].getActivity(), this.genes[index].getBuilding());
-            Gene randGene = new Gene(this.genes[randIndex].getActivity(), this.genes[randIndex].getBuilding());
-
-            this.genes[index].setBuilding(randGene.getBuilding());
-            this.genes[index].setActivity(gene.getActivity());
-
-            this.genes[randIndex].setBuilding(gene.getBuilding());
-            this.genes[randIndex].setActivity(randGene.getActivity());
-        }
+//        } else {
+//            int randIndex = randomInt(index);
+//
+//            Gene gene = new Gene(this.genes[index].getActivity(), this.genes[index].getBuilding());
+//            Gene randGene = new Gene(this.genes[randIndex].getActivity(), this.genes[randIndex].getBuilding());
+//
+//            this.genes[index].setBuilding(randGene.getBuilding());
+//            this.genes[index].setActivity(gene.getActivity());
+//
+//            this.genes[randIndex].setBuilding(gene.getBuilding());
+//            this.genes[randIndex].setActivity(randGene.getActivity());
+//        }
     }
 
     private int randomInt(int index) {
@@ -106,8 +106,11 @@ public class Permutation {
         return true;
     }
 
-    public List<Gene> getGenesFromFront(int amount) {
-        return new ArrayList<>(Arrays.asList(genes).subList(0, amount));
+    public List<Gene> getGenesAtRandom(int amount) {
+        List<Gene> randList = Arrays.asList(genes);
+        Collections.shuffle(randList);
+
+        return new ArrayList<>(randList.subList(0, amount));
     }
 
     public List<Gene> getGenesFromBack(int amount) {
