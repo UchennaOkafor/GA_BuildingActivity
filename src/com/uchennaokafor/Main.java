@@ -1,25 +1,32 @@
 package com.uchennaokafor;
 
+import java.util.*;
+
 public class Main {
 
     public static void main(String[] args) {
+        final int POPULATION_SIZE = 500;
         int generationCount = 1;
-        final int POPULATION_SIZE = 5000;
+
         Population population = new Population(POPULATION_SIZE, true);
-        Permutation best = population.getFittest();
+        Map<Integer, Permutation> map = new TreeMap<>();
 
         // Evolve our population until we reach a certain generation number
         do {
-            System.out.printf("Generation: %d Fittest: %d \n", generationCount, population.getFittest().getFitnessScore());
             population = Algorithm.evolvePopulation(population);
-            if (population.getFittest().getFitnessScore() >= best.getFitnessScore()) {
-                best = population.getFittest();
-            }
+            map.put(generationCount, new Permutation(population.getFittest().getGenes()));
+
+            System.out.printf("Generation: %d Fittest: %d \n",
+                    generationCount, population.getFittest().getFitnessScore());
+
             generationCount++;
+
         } while(generationCount < 100);
 
         System.out.printf("\nFinal Generation: %d \n", generationCount);
-        System.out.printf("The fittest permutation is: %s \n", population.getFittest());
-        System.out.printf("The fittest permutation has a score of: %d \n", population.getFittest().getFitnessScore());
+        Permutation best = map.values().stream().max(Comparator.comparingInt(Permutation::getFitnessScore)).get();
+
+        System.out.printf("The fittest permutation is: %s \n", best);
+        System.out.printf("The fittest permutation was found in generation %d and has a score of: %d \n", 1, best.getFitnessScore());
     }
 }

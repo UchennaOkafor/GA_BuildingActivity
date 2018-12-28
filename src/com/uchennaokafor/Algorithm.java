@@ -28,18 +28,25 @@ public class Algorithm {
         } else {
             elitismOffset = 0;
         }
+
+        double[] weights = new double[pop.getPopulationSize()];
+        for (int j = 0; j < pop.getPopulationSize(); j++) {
+            weights[j] = pop.getPermutationAt(j).getFitnessScore();
+        }
+
         // Loop over the population size and create new individuals with crossover
-        for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i++) {
-            double[] weights = new double[pop.getPopulationSize()];
-            for (int j = 0; j < pop.getPopulationSize(); j++) {
-                weights[j] = pop.getPermutationAt(j).getFitnessScore();
+        for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i+=2) {
+            int[] indicies = StochasticUniversalSampling.execute(weights, 2);
+            Permutation parent1 = pop.getPermutationAt(indicies[0]);
+            Permutation parent2 = pop.getPermutationAt(indicies[0]);
+
+            Permutation[] offSprings = crossover(parent1, parent2);
+
+            newPopulation.setPermutationAt(i, offSprings[0]);
+
+            if (i + 1 != newPopulation.getPopulationSize()) {
+                newPopulation.setPermutationAt(i + 1, offSprings[1]);
             }
-
-            int[] indexes = StochasticUniversalSampling.execute(weights, 2);
-
-            Permutation offspring = crossover(pop.getPermutationAt(indexes[0]), pop.getPermutationAt(indexes[1]));
-
-            newPopulation.setPermutationAt(i, offspring);
         }
 
         // Mutate population
@@ -65,10 +72,18 @@ public class Algorithm {
     }
 
     // Crossover individuals
-    private static Permutation crossover(Permutation parent1, Permutation parent2) {
-        int[] crossoverPoints = generateCrossoverPoint(parent1);
-        int startIndex = crossoverPoints[0];
-        int stopIndex = crossoverPoints[1];
+    private static Permutation[] crossover(Permutation parent1, Permutation parent2) {
+        Permutation child1 = crossoverPermutation(parent1, parent2);
+        Permutation child2 = crossoverPermutation(parent2, parent1);
+
+        return new Permutation[] {child1, child2};
+    }
+
+    private static Permutation crossoverPermutation(Permutation parent1, Permutation parent2) {
+        int[] pointsParent1 = generateCrossoverPoint(parent1);
+
+        int startIndex = pointsParent1[0];
+        int stopIndex = pointsParent1[1];
 
         List<Gene> genes = new ArrayList<>();
         List<Gene> availableGenes = new ArrayList<>(Arrays.asList(parent2.getGenes()));
