@@ -52,8 +52,8 @@ public class Permutation {
     public void mutateGene(int index) {
         int anotherRandomIndex = randomInt(index);
 
-        Gene gene = new Gene(this.genes[index].getActivity(), this.genes[index].getBuilding());
-        Gene randGene = new Gene(this.genes[anotherRandomIndex].getActivity(), this.genes[anotherRandomIndex].getBuilding());
+        Gene gene = new Gene(this.genes[index].getBuilding(), this.genes[index].getActivity());
+        Gene randGene = new Gene(this.genes[anotherRandomIndex].getBuilding(), this.genes[anotherRandomIndex].getActivity());
 
         this.genes[index].setBuilding(randGene.getBuilding());
         this.genes[index].setActivity(gene.getActivity());
@@ -113,7 +113,7 @@ public class Permutation {
         int randBuilding = availableBuildings.get(randBuildingIndex);
         int randActivity = availableActivities.remove(randActivityIndex);
 
-        return new Gene(randActivity, randBuilding);
+        return new Gene(randBuilding, randActivity);
     }
 
     public int getFitnessScore() {
@@ -132,6 +132,18 @@ public class Permutation {
 
     public Gene getGene(int index) {
         return this.genes[index];
+    }
+
+    public Permutation deepClone() {
+        Gene[] genesCopy = new Gene[this.genes.length];
+        for (int i = 0; i < this.genes.length; i++) {
+            int activity = this.genes[i].getActivity();
+            int building = this.genes[i].getBuilding();
+
+            genesCopy[i] = new Gene(building, activity);
+        }
+
+        return new Permutation(genesCopy);
     }
 
     @Override

@@ -5,9 +5,9 @@ public class Gene {
     private int activity;
     private int building;
 
-    public Gene(int activity, int building) {
-        this.activity = activity;
+    public Gene(int building, int activity) {
         this.building = building;
+        this.activity = activity;
     }
 
     public int getActivity() {
