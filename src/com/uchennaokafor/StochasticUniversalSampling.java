@@ -12,7 +12,7 @@ public class StochasticUniversalSampling {
      * @param n - number of individuals to choose from population.
      * @return set of indexes, pointing to the chosen individuals in the population set
      */
-    public static int[] execute(double[] population, int n) {
+    public static int[] execute(Double[] population, int n) {
         // Calculate total fitness of population
         double f = 0.0;
         for (double segment : population) {

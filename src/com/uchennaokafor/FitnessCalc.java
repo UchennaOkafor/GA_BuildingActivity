@@ -14,8 +14,8 @@ public class FitnessCalc {
     };
 
     public static int getGeneScore(Gene gene) {
-        int activityIndex = gene.getActivity();
         int buildingIndex = gene.getBuilding();
+        int activityIndex = gene.getActivity();
 
         return suitabilityIndicies[buildingIndex][activityIndex];
     }

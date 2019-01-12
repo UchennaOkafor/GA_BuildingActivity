@@ -29,14 +29,11 @@ public class Algorithm {
             elitismOffset = 0;
         }
 
-        double[] weights = new double[pop.getPopulationSize()];
-        for (int j = 0; j < pop.getPopulationSize(); j++) {
-            weights[j] = pop.getPermutationAt(j).getFitnessScore();
-        }
+        Double[] sortedWeights = getSortedWeights(pop);
 
         // Loop over the population size and create new individuals with crossover
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i+=2) {
-            int[] indicies = StochasticUniversalSampling.execute(weights, 2);
+            int[] indicies = StochasticUniversalSampling.execute(sortedWeights, 2);
             Permutation parent1 = pop.getPermutationAt(indicies[0]);
             Permutation parent2 = pop.getPermutationAt(indicies[0]);
 
@@ -51,10 +48,21 @@ public class Algorithm {
 
         // Mutate population
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i++) {
-            mutate(newPopulation.getPermutationAt(i));
+            //mutate(newPopulation.getPermutationAt(i));
         }
 
         return newPopulation;
+    }
+
+    private static Double[] getSortedWeights(Population pop) {
+        List<Double> weights = new ArrayList<>();
+
+        for (int j = 0; j < pop.getPopulationSize(); j++) {
+            weights.add((double) pop.getPermutationAt(j).getFitnessScore());
+        }
+
+        weights.sort(Collections.reverseOrder());
+        return weights.toArray(new Double[]{});
     }
 
     private static int[] generateCrossoverPoint(Permutation parent) {
