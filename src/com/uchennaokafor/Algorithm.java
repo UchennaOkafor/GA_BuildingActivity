@@ -33,9 +33,9 @@ public class Algorithm {
 
         // Loop over the population size and create new individuals with crossover
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i+=2) {
-            int[] indicies = StochasticUniversalSampling.execute(sortedWeights, 2);
-            Permutation parent1 = pop.getPermutationAt(indicies[0]);
-            Permutation parent2 = pop.getPermutationAt(indicies[1]);
+            int[] parentIndexes = StochasticUniversalSampling.execute(sortedWeights, 2);
+            Permutation parent1 = pop.getPermutationAt(parentIndexes[0]);
+            Permutation parent2 = pop.getPermutationAt(parentIndexes[1]);
 
             Permutation[] offSprings = crossover(parent1, parent2);
 
