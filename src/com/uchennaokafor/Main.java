@@ -4,6 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         int populationSize = 500;
+        int maxGenerations = 200;
         int generationCount = 1;
 
         Population population = new Population(populationSize, true);
@@ -24,8 +25,7 @@ public class Main {
             }
 
             generationCount++;
-
-        } while(generationCount < 200);
+        } while(generationCount < maxGenerations);
 
         System.out.printf("\nFinal Generation: %d \n", generationCount);
         System.out.printf("The fittest permutation was found in " +
