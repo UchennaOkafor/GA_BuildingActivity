@@ -35,7 +35,7 @@ public class Algorithm {
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i+=2) {
             int[] indicies = StochasticUniversalSampling.execute(sortedWeights, 2);
             Permutation parent1 = pop.getPermutationAt(indicies[0]);
-            Permutation parent2 = pop.getPermutationAt(indicies[0]);
+            Permutation parent2 = pop.getPermutationAt(indicies[1]);
 
             Permutation[] offSprings = crossover(parent1, parent2);
 
@@ -48,7 +48,7 @@ public class Algorithm {
 
         // Mutate population
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i++) {
-            //mutate(newPopulation.getPermutationAt(i));
+            mutate(newPopulation.getPermutationAt(i));
         }
 
         return newPopulation;
