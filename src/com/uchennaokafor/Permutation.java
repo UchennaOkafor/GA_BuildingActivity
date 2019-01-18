@@ -50,26 +50,26 @@ public class Permutation {
     }
 
     public void mutateGene(int index) {
-        int anotherRandomIndex = randomInt(index);
+        int randomGeneIndex = generateRandomGeneIndex(index);
 
-        Gene gene = new Gene(this.genes[index].getBuilding(), this.genes[index].getActivity());
-        Gene randGene = new Gene(this.genes[anotherRandomIndex].getBuilding(), this.genes[anotherRandomIndex].getActivity());
+        Gene gene = this.genes[index].deepClone();
+        Gene randGene = this.genes[randomGeneIndex].deepClone();
 
         this.genes[index].setBuilding(randGene.getBuilding());
         this.genes[index].setActivity(gene.getActivity());
 
-        this.genes[anotherRandomIndex].setBuilding(gene.getBuilding());
-        this.genes[anotherRandomIndex].setActivity(randGene.getActivity());
+        this.genes[randomGeneIndex].setBuilding(gene.getBuilding());
+        this.genes[randomGeneIndex].setActivity(randGene.getActivity());
     }
 
-    private int randomInt(int index) {
-        int a;
+    private int generateRandomGeneIndex(int indexToExclude) {
+        int randomIndex;
 
         do {
-            a = this.rand.nextInt(this.genes.length);
-        } while (a == index);
+            randomIndex = this.rand.nextInt(this.genes.length);
+        } while (randomIndex == indexToExclude);
 
-        return a;
+        return randomIndex;
     }
 
     private void generateRandomGenes() {
@@ -136,11 +136,9 @@ public class Permutation {
 
     public Permutation deepClone() {
         Gene[] genesCopy = new Gene[this.genes.length];
-        for (int i = 0; i < this.genes.length; i++) {
-            int activity = this.genes[i].getActivity();
-            int building = this.genes[i].getBuilding();
 
-            genesCopy[i] = new Gene(building, activity);
+        for (int i = 0; i < this.genes.length; i++) {
+            genesCopy[i] = this.genes[i].deepClone();
         }
 
         return new Permutation(genesCopy);

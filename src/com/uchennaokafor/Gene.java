@@ -34,9 +34,13 @@ public class Gene {
         return getBuilding() + 1;
     }
 
+    public Gene deepClone() {
+        return new Gene(building, activity);
+    }
+
     @Override
     public String toString() {
         return String.format("{Building=%d, Activity=%d}",
-                getUserFriendlyBuilding(),getUserFriendlyActivity());
+                getUserFriendlyBuilding(), getUserFriendlyActivity());
     }
 }
