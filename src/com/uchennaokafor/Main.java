@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         int populationSize = 500;
-        int maxGenerations = 200;
+        int maxGenerations = 150;
         int generationCount = 1;
 
         Population population = new Population(populationSize, true);

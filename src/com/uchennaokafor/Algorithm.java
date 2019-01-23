@@ -29,11 +29,10 @@ public class Algorithm {
             elitismOffset = 0;
         }
 
-        Double[] sortedWeights = getSortedWeights(pop);
-
         // Loop over the population size and create new individuals with crossover
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i+=2) {
-            int[] parentIndexes = StochasticUniversalSampling.execute(sortedWeights, 2);
+            int[] parentIndexes = susSelection(2, pop);
+
             Permutation parent1 = pop.getPermutationAt(parentIndexes[0]);
             Permutation parent2 = pop.getPermutationAt(parentIndexes[1]);
 
@@ -52,17 +51,6 @@ public class Algorithm {
         }
 
         return newPopulation;
-    }
-
-    private static Double[] getSortedWeights(Population pop) {
-        List<Double> weights = new ArrayList<>();
-
-        for (int j = 0; j < pop.getPopulationSize(); j++) {
-            weights.add((double) pop.getPermutationAt(j).getFitnessScore());
-        }
-
-        weights.sort(Collections.reverseOrder());
-        return weights.toArray(new Double[]{});
     }
 
     private static int[] generateCrossoverPoint(Permutation parent) {
@@ -119,5 +107,37 @@ public class Algorithm {
                 permutation.mutateGene(i);
             }
         }
+    }
+
+    private static int[] susSelection(int amount, Population pop) {
+        double[] populationFitnessValues = new double[pop.getPopulationSize()];
+        double totalFitnessSum = 0.0;
+
+        for (int i = 0; i < pop.getPopulationSize(); i++) {
+            double fitness = (double) pop.getPermutationAt(i).getFitnessScore();
+
+            populationFitnessValues[i] = fitness;
+            totalFitnessSum += fitness;
+        }
+
+        double pointerDistance = totalFitnessSum / amount;
+        double start = Math.random() * pointerDistance;
+
+        int[] individualIndexes = new int[amount];
+
+        for (int i = 0; i < amount; i++) {
+            double pointer = start + (i * pointerDistance);
+            double partialSum = 0;
+
+            for (int j = 0; j < populationFitnessValues.length; j++) {
+                partialSum += populationFitnessValues[j];
+                if (partialSum >= pointer) {
+                    individualIndexes[i] = j;
+                    break;
+                }
+            }
+        }
+
+        return individualIndexes;
     }
 }
