@@ -31,7 +31,7 @@ public class Algorithm {
 
         // Loop over the population size and create new individuals with crossover
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i+=2) {
-            int[] parentIndexes = susSelection(2, pop);
+            int[] parentIndexes = susSelection(pop, 2);
 
             Permutation parent1 = pop.getPermutationAt(parentIndexes[0]);
             Permutation parent2 = pop.getPermutationAt(parentIndexes[1]);
@@ -67,49 +67,55 @@ public class Algorithm {
         return new int[] {startIndex, stopIndex};
     }
 
-    // Crossover individuals
     private static Permutation[] crossover(Permutation parent1, Permutation parent2) {
-        Permutation child1 = crossoverPermutation(parent1, parent2);
-        Permutation child2 = crossoverPermutation(parent2, parent1);
-
-        return new Permutation[] {child1, child2};
-    }
-
-    private static Permutation crossoverPermutation(Permutation parent1, Permutation parent2) {
         int[] pointsParent1 = generateCrossoverPoint(parent1);
-
+        int genesSize = parent1.getGenes().length;
         int startIndex = pointsParent1[0];
         int stopIndex = pointsParent1[1];
 
-        List<Gene> genes = new ArrayList<>();
-        List<Gene> availableGenes = new ArrayList<>(Arrays.asList(parent2.getGenes()));
+        List<Gene> parent1Genes = new ArrayList<>(Arrays.asList(parent1.getGenes()));
+        List<Gene> parent2Genes = new ArrayList<>(Arrays.asList(parent2.getGenes()));
 
-        for (int i = startIndex; i < stopIndex; i++) {
-            Gene gene = parent1.getGene(i);
-            genes.add(gene);
-            availableGenes.removeIf(g -> g.getActivity() == gene.getActivity());
+        List<Gene> child1Genes = new ArrayList<>(parent1Genes.subList(startIndex, stopIndex));
+        parent1Genes.subList(startIndex, stopIndex).clear();
+        List<Gene> child2Genes = new ArrayList<>(parent1Genes);
+
+        for (Gene gene : parent2Genes) {
+            if (child1Genes.size() == genesSize && child2Genes.size() == genesSize) {
+                break;
+            }
+
+            if (child1Genes.stream().noneMatch(
+                    g -> g.getActivity() == gene.getActivity())) {
+
+                child1Genes.add(gene.deepClone());
+            }
+
+            if (child2Genes.stream().noneMatch(
+                    g -> g.getActivity() == gene.getActivity())) {
+
+                child2Genes.add(gene.deepClone());
+            }
         }
 
-        while (genes.size() != parent1.getGenes().length) {
-            int randIndex = RAND.nextInt(availableGenes.size());
-            genes.add(availableGenes.remove(randIndex));
-        }
-
-        return new Permutation(genes.toArray(new Gene[] {}));
+        return new Permutation[] {
+            new Permutation(child1Genes),
+            new Permutation(child2Genes)
+        };
     }
 
-    // Mutate an individual
+
     private static void mutate(Permutation permutation) {
-        // Loop through genes
+        // Loop through genes and randomly mutate a gene
         for (int i = 0; i < permutation.getGenes().length; i++) {
             if (Math.random() <= MUTATION_RATE) {
-                // Create random gene
                 permutation.mutateGene(i);
             }
         }
     }
 
-    private static int[] susSelection(int amount, Population pop) {
+    //Selects parents for crossover by using Stochastic Universal Sampling algorithm
+    private static int[] susSelection(Population pop, int amount) {
         double[] populationFitnessValues = new double[pop.getPopulationSize()];
         double totalFitnessSum = 0.0;
 

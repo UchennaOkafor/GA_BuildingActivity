@@ -6,9 +6,6 @@ import java.util.*;
  * Represents a chromosome
  */
 public class Permutation {
-    /**
-     *
-     */
     private final int MAX_BUILDINGS = 8;
     private final int MAX_ACTIVITIES = 7;
 
@@ -30,6 +27,10 @@ public class Permutation {
             availableActivities.remove(new Integer(gene.getActivity()));
             availableBuildings.remove(new Integer(gene.getBuilding()));
         }
+    }
+
+    public Permutation(List<Gene> genes) {
+        this(genes.toArray(new Gene[]{}));
     }
 
     private void initialize() {
