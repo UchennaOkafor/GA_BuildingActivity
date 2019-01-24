@@ -3,17 +3,13 @@ package com.uchennaokafor;
 import java.util.*;
 
 public class Algorithm {
-    /* GA parameters */
+    // GA parameters
+    private static final double UNIFORM_RATE = 0.5;
     private static final double MUTATION_RATE = 0.015;
     private static final boolean ELITISM = true;
-    private static Random RAND = new Random();
 
     // Evolve a population
     public static Population evolvePopulation(Population pop) {
-        return evolve(pop);
-    }
-
-    private static Population evolve(Population pop) {
         Population newPopulation = new Population(pop.getPopulationSize(), false);
 
         // Keep our best individual
@@ -21,7 +17,6 @@ public class Algorithm {
             newPopulation.setPermutationAt(0, pop.getFittest());
         }
 
-        // Crossover population
         int elitismOffset;
         if (ELITISM) {
             elitismOffset = 1;
@@ -29,19 +24,19 @@ public class Algorithm {
             elitismOffset = 0;
         }
 
-        // Loop over the population size and create new individuals with crossover
+        // Loop over the population in steps of 2 and create new individuals with crossover
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i+=2) {
             int[] parentIndexes = susSelection(pop, 2);
 
             Permutation parent1 = pop.getPermutationAt(parentIndexes[0]);
             Permutation parent2 = pop.getPermutationAt(parentIndexes[1]);
 
-            Permutation[] offSprings = crossover(parent1, parent2);
+            Permutation[] children = crossover(parent1, parent2);
 
-            newPopulation.setPermutationAt(i, offSprings[0]);
+            newPopulation.setPermutationAt(i, children[0]);
 
             if (i + 1 != newPopulation.getPopulationSize()) {
-                newPopulation.setPermutationAt(i + 1, offSprings[1]);
+                newPopulation.setPermutationAt(i + 1, children[1]);
             }
         }
 
@@ -53,48 +48,27 @@ public class Algorithm {
         return newPopulation;
     }
 
-    private static int[] generateCrossoverPoint(Permutation parent) {
-        int amountOfGenes = parent.getGenes().length;
-        int startIndex = RAND.nextInt(amountOfGenes / 2);
-        int stopIndex, distance;
-
-        do {
-            stopIndex = RAND.nextInt(amountOfGenes);
-            distance = stopIndex - startIndex;
-
-        } while (distance <= 2 || distance >= 5);
-
-        return new int[] {startIndex, stopIndex};
-    }
-
     private static Permutation[] crossover(Permutation parent1, Permutation parent2) {
-        int[] pointsParent1 = generateCrossoverPoint(parent1);
-        int genesSize = parent1.getGenes().length;
-        int startIndex = pointsParent1[0];
-        int stopIndex = pointsParent1[1];
+        int genesLength = parent1.getGenes().length;
 
-        List<Gene> parent1Genes = new ArrayList<>(Arrays.asList(parent1.getGenes()));
-        List<Gene> parent2Genes = new ArrayList<>(Arrays.asList(parent2.getGenes()));
+        List<Gene> parent1Genes = Arrays.asList(parent1.getGenes());
+        List<Gene> parent2Genes = Arrays.asList(parent2.getGenes());
 
-        List<Gene> child1Genes = new ArrayList<>(parent1Genes.subList(startIndex, stopIndex));
-        parent1Genes.subList(startIndex, stopIndex).clear();
-        List<Gene> child2Genes = new ArrayList<>(parent1Genes);
+        //Sorts genes in ascending order based on the activity value
+        parent1Genes.sort(Comparator.comparingInt(Gene::getActivity));
+        parent2Genes.sort(Comparator.comparingInt(Gene::getActivity));
 
-        for (Gene gene : parent2Genes) {
-            if (child1Genes.size() == genesSize && child2Genes.size() == genesSize) {
-                break;
-            }
+        Gene[] child1Genes = new Gene[genesLength];
+        Gene[] child2Genes = new Gene[genesLength];
 
-            if (child1Genes.stream().noneMatch(
-                    g -> g.getActivity() == gene.getActivity())) {
-
-                child1Genes.add(gene.deepClone());
-            }
-
-            if (child2Genes.stream().noneMatch(
-                    g -> g.getActivity() == gene.getActivity())) {
-
-                child2Genes.add(gene.deepClone());
+        //Uses uniform crossover to select genes for crossover
+        for (int i = 0; i < genesLength; i++) {
+            if (Math.random() <= UNIFORM_RATE) {
+                child1Genes[i] = parent1Genes.get(i).deepClone();
+                child2Genes[i] = parent2Genes.get(i).deepClone();
+            } else {
+                child1Genes[i] = parent2Genes.get(i).deepClone();
+                child2Genes[i] = parent1Genes.get(i).deepClone();
             }
         }
 

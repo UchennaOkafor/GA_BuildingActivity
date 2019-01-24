@@ -29,10 +29,6 @@ public class Permutation {
         }
     }
 
-    public Permutation(List<Gene> genes) {
-        this(genes.toArray(new Gene[]{}));
-    }
-
     private void initialize() {
         this.rand = new Random();
         this.availableBuildings = new ArrayList<>();
