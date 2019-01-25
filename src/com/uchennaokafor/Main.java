@@ -3,34 +3,43 @@ package com.uchennaokafor;
 public class Main {
 
     public static void main(String[] args) {
-        int populationSize = 100;
-        int maxGenerations = 50;
-        int generationCount = 1;
+        final int POPULATION_SIZE = 100;
+        final int MAX_GEN_NO_IMPROVEMENTS = 15;
 
-        Population population = new Population(populationSize, true);
-
-        int fittestGeneration = 0;
+        Population population = new Population(POPULATION_SIZE, true);
         Chromosome fittest = population.getFittest().deepClone();
 
+        int generationCount = 1;
+        int noImprovementCounter = 0;
+        int fittestGeneration = generationCount;
+
         do {
-            population = Algorithm.evolvePopulation(population);
-
             System.out.printf("Generation: %d Fittest: %d \n",
-                    generationCount, population.getFittest().getFitness());
+                generationCount, population.getFittest().getFitness());
 
+            Population newPopulation = Algorithm.evolvePopulation(population);
+
+            //Keeps the fittest
             if (population.getFittest().getFitness() >= fittest.getFitness()) {
                 fittestGeneration = generationCount;
                 fittest = population.getFittest().deepClone();
             }
 
+            if (newPopulation.getFittest().getFitness() ==
+                    population.getFittest().getFitness()) {
+                noImprovementCounter++;
+            } else {
+                noImprovementCounter = 0;
+            }
+
             generationCount++;
+            population = newPopulation;
 
-            // Until we reach predefined generation number
-        } while(generationCount < maxGenerations);
+            //Terminates if there has been no improvements for n generations
+        } while (noImprovementCounter < MAX_GEN_NO_IMPROVEMENTS);
 
-        System.out.printf("\nFinal Generation: %d \n", generationCount);
-        System.out.printf("The fittest chromosome was found in " +
-                "generation %d and has a fitness score of: %d \n", fittestGeneration, fittest.getFitness());
-        System.out.printf("The fittest chromosome is: %s \n", fittest);
+        System.out.printf("\nThere has been no improvements for %d generations", MAX_GEN_NO_IMPROVEMENTS);
+        System.out.printf("\nThe fittest chromosome was found in generation %d and has a fitness score of %d", fittestGeneration, fittest.getFitness());
+        System.out.printf("\nThe fittest chromosome is: %s\n", fittest);
     }
 }

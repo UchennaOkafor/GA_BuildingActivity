@@ -40,34 +40,11 @@ public class Chromosome {
     }
 
     /**
-     * Mutates a gene using swap mutation
+     * Mutates a gene using random resetting operation
      */
     public void mutateGene(int index) {
-        //Picks a random gene index for swap mutation
-        int anotherRandomGeneIndex = getRandomGeneIndex(index);
-
-        Gene gene1 = genes[index].deepClone();
-        Gene gene2 = genes[anotherRandomGeneIndex].deepClone();
-
-        //Swaps the building and activity with the two genes
-        genes[index].setBuilding(gene2.getBuilding());
-        genes[index].setActivity(gene1.getActivity());
-
-        genes[anotherRandomGeneIndex].setBuilding(gene1.getBuilding());
-        genes[anotherRandomGeneIndex].setActivity(gene2.getActivity());
-    }
-
-    /**
-     * Gets a random gene index
-     */
-    private int getRandomGeneIndex(int indexToExclude) {
-        int randomIndex;
-
-        do {
-            randomIndex = rand.nextInt(genes.length);
-        } while (randomIndex == indexToExclude);
-
-        return randomIndex;
+        int randBuilding = rand.nextInt(MAX_BUILDINGS);
+        genes[index].setBuilding(randBuilding);
     }
 
     /**

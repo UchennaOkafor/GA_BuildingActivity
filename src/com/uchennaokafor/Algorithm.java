@@ -50,6 +50,7 @@ public class Algorithm {
         List<Gene> parent2Genes = Arrays.asList(parent2.getGenes());
 
         //Sorts genes in asc ending order based on the activity value
+        //Just in case the order of the genes have been altered
         parent1Genes.sort(Comparator.comparingInt(Gene::getActivity));
         parent2Genes.sort(Comparator.comparingInt(Gene::getActivity));
 
