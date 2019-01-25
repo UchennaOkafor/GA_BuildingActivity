@@ -1,8 +1,9 @@
 package com.uchennaokafor;
 
 public class Gene {
-
-    //The alleles
+    /**
+     *     The alleles
+     */
     private int activity;
     private int building;
 
@@ -28,14 +29,16 @@ public class Gene {
     }
 
     /**
-     * Constructs a new instance of gene with the same values
-     * to avoid a reference type bug
+     * Constructs a new instance of the object with the same member values
+     * to avoid a reference type bug, effectively cloning the object
      */
     public Gene deepClone() {
         return new Gene(building, activity);
     }
 
-    //A user friendly representation of each gene object
+    /**
+     * A user friendly representation of each gene object
+     */
     @Override
     public String toString() {
         return String.format("{Building=%d, Activity=%d}",

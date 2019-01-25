@@ -3,8 +3,8 @@ package com.uchennaokafor;
 public class Main {
 
     public static void main(String[] args) {
-        int populationSize = 200;
-        int maxGenerations = 100;
+        int populationSize = 100;
+        int maxGenerations = 50;
         int generationCount = 1;
 
         Population population = new Population(populationSize, true);
@@ -12,7 +12,6 @@ public class Main {
         int fittestGeneration = 0;
         Chromosome fittest = population.getFittest().deepClone();
 
-        // Evolve our population until we reach a certain generation number
         do {
             population = Algorithm.evolvePopulation(population);
 
@@ -25,6 +24,8 @@ public class Main {
             }
 
             generationCount++;
+
+            // Until we reach predefined generation number
         } while(generationCount < maxGenerations);
 
         System.out.printf("\nFinal Generation: %d \n", generationCount);

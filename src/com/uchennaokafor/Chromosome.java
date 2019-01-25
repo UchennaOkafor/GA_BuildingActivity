@@ -8,85 +8,80 @@ public class Chromosome {
 
     private Gene[] genes;
     private Random rand;
-    private List<Integer> availableBuildings;
-    private List<Integer> availableActivities;
 
+    /**
+     * Initializes chromosome and generates random genes
+     */
     public Chromosome() {
-        initialize();
-        generateRandomGenes();
-    }
-
-    public Chromosome(Gene[] genes) {
-        initialize();
-        this.genes = genes;
-
-        for (Gene gene : this.genes) {
-            availableActivities.remove(new Integer(gene.getActivity()));
-            availableBuildings.remove(new Integer(gene.getBuilding()));
-        }
-    }
-
-    private void initialize() {
         this.rand = new Random();
-        this.availableBuildings = new ArrayList<>();
-        this.availableActivities = new ArrayList<>();
-
-        for (int i = 0; i < MAX_BUILDINGS; i++) {
-            availableBuildings.add(i);
-        }
-
-        for (int i = 0; i < MAX_ACTIVITIES; i++) {
-            availableActivities.add(i);
-        }
-
-        Collections.shuffle(availableActivities, this.rand);
-        Collections.shuffle(availableBuildings, this.rand);
+        this.genes = generateRandomGenes();
     }
 
+    /**
+     * Initializes chromosome and assigns genes
+     */
+    public Chromosome(Gene[] genes) {
+        this.rand = new Random();
+        this.genes = genes;
+    }
+
+    /**
+     * Generates an array of random activity/building association
+     */
+    private Gene[] generateRandomGenes() {
+        Gene[] generatedGenes = new Gene[MAX_ACTIVITIES];
+
+        for (int activity = 0; activity < MAX_ACTIVITIES; activity++) {
+            int randBuilding = rand.nextInt(MAX_BUILDINGS);
+            generatedGenes[activity] = new Gene(randBuilding, activity);
+        }
+
+        return generatedGenes;
+    }
+
+    /**
+     * Mutates a gene using swap mutation
+     */
     public void mutateGene(int index) {
-        int randomGeneIndex = generateRandomGeneIndex(index);
+        //Picks a random gene index for swap mutation
+        int anotherRandomGeneIndex = getRandomGeneIndex(index);
 
-        Gene gene = this.genes[index].deepClone();
-        Gene randGene = this.genes[randomGeneIndex].deepClone();
+        Gene gene1 = genes[index].deepClone();
+        Gene gene2 = genes[anotherRandomGeneIndex].deepClone();
 
-        this.genes[index].setBuilding(randGene.getBuilding());
-        this.genes[index].setActivity(gene.getActivity());
+        //Swaps the building and activity with the two genes
+        genes[index].setBuilding(gene2.getBuilding());
+        genes[index].setActivity(gene1.getActivity());
 
-        this.genes[randomGeneIndex].setBuilding(gene.getBuilding());
-        this.genes[randomGeneIndex].setActivity(randGene.getActivity());
+        genes[anotherRandomGeneIndex].setBuilding(gene1.getBuilding());
+        genes[anotherRandomGeneIndex].setActivity(gene2.getActivity());
     }
 
-    private int generateRandomGeneIndex(int indexToExclude) {
+    /**
+     * Gets a random gene index
+     */
+    private int getRandomGeneIndex(int indexToExclude) {
         int randomIndex;
 
         do {
-            randomIndex = this.rand.nextInt(this.genes.length);
+            randomIndex = rand.nextInt(genes.length);
         } while (randomIndex == indexToExclude);
 
         return randomIndex;
     }
 
-    private void generateRandomGenes() {
-        List<Gene> generatedGenes = new ArrayList<>();
-        Gene gene;
-
-        do {
-            gene = generateUniqueGene();
-            if (gene != null) {
-                generatedGenes.add(gene);
-            }
-        } while (gene != null);
-
-        this.genes = generatedGenes.toArray(new Gene[]{});
-    }
-
+    /**
+     * Checks the validity of the genes in the chromosome.
+     * This is useful if the genes have been manually modified/assigned
+     */
     public boolean isChromosomeValid() {
-        if (this.genes.length != MAX_ACTIVITIES) {
+        if (genes.length != MAX_ACTIVITIES) {
             return false;
         }
 
-        for (Gene gene1 : this.genes) {
-            for (Gene gene2 : this.genes) {
+        //Ensures that the same activity allele isn't assigned more than once
+        for (Gene gene1 : genes) {
+            for (Gene gene2 : genes) {
                 if (gene1 != gene2 && gene1.getActivity() == gene2.getActivity()) {
                     return false;
                 }
@@ -96,33 +91,23 @@ public class Chromosome {
         return true;
     }
 
-    private Gene generateUniqueGene() {
-        if (availableActivities.size() == 0) {
-            return null;
-        }
-
-        int randBuildingIndex = this.rand.nextInt(availableBuildings.size());
-        int randActivityIndex = this.rand.nextInt(availableActivities.size());
-
-        int randBuilding = availableBuildings.get(randBuildingIndex);
-        int randActivity = availableActivities.remove(randActivityIndex);
-
-        return new Gene(randBuilding, randActivity);
-    }
-
     public int getFitness() {
         return FitnessCalc.getChromosomeFitness(this);
     }
 
     public Gene[] getGenes() {
-        return this.genes;
+        return genes;
     }
 
+    /**
+     * Constructs a new instance of the object with the same member values
+     * to avoid a reference type bug, effectively cloning the object
+     */
     public Chromosome deepClone() {
-        Gene[] genesCopy = new Gene[this.genes.length];
+        Gene[] genesCopy = new Gene[genes.length];
 
-        for (int i = 0; i < this.genes.length; i++) {
-            genesCopy[i] = this.genes[i].deepClone();
+        for (int i = 0; i < genes.length; i++) {
+            genesCopy[i] = genes[i].deepClone();
         }
 
         return new Chromosome(genesCopy);
