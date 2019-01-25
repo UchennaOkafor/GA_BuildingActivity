@@ -2,6 +2,7 @@ package com.uchennaokafor;
 
 public class Gene {
 
+    //The alleles
     private int activity;
     private int building;
 
@@ -26,21 +27,18 @@ public class Gene {
         this.building = building;
     }
 
-    public int getUserFriendlyActivity() {
-        return getActivity() + 1;
-    }
-
-    public int getUserFriendlyBuilding() {
-        return getBuilding() + 1;
-    }
-
+    /**
+     * Constructs a new instance of gene with the same values
+     * to avoid a reference type bug
+     */
     public Gene deepClone() {
         return new Gene(building, activity);
     }
 
+    //A user friendly representation of each gene object
     @Override
     public String toString() {
         return String.format("{Building=%d, Activity=%d}",
-                getUserFriendlyBuilding(), getUserFriendlyActivity());
+                getBuilding() + 1, getActivity() + 1);
     }
 }

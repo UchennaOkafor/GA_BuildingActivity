@@ -13,10 +13,19 @@ public class FitnessCalc {
         { 33, 29, 22, 25, 25, 25, 33},
     };
 
-    public static int getGeneScore(Gene gene) {
-        int buildingIndex = gene.getBuilding();
-        int activityIndex = gene.getActivity();
+    /**
+     * Calculates the fitness for each chromosome by adding up the suitability index values for each gene
+     */
+    public static int getChromosomeFitness(Chromosome genes) {
+        int fitness = 0;
 
-        return suitabilityIndicies[buildingIndex][activityIndex];
+        for (Gene gene : genes.getGenes()) {
+            int buildingIndex = gene.getBuilding();
+            int activityIndex = gene.getActivity();
+
+            fitness += suitabilityIndicies[buildingIndex][activityIndex];
+        }
+
+        return fitness;
     }
 }

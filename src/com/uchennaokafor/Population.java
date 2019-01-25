@@ -2,10 +2,10 @@ package com.uchennaokafor;
 
 public class Population {
 
-    private Permutation[] permutations;
+    private Chromosome[] chromosomes;
 
     public Population(int size, boolean initialize) {
-        this.permutations = new Permutation[size];
+        this.chromosomes = new Chromosome[size];
 
         if (initialize) {
             initializePopulation(size);
@@ -14,32 +14,33 @@ public class Population {
 
     private void initializePopulation(int populationSize) {
         for (int i = 0; i < populationSize; i++) {
-            this.permutations[i] = new Permutation();
+            //Creates a random chromosome
+            this.chromosomes[i] = new Chromosome();
         }
     }
 
-    public Permutation getFittest() {
-        Permutation fittest = this.permutations[0];
+    public Chromosome getFittest() {
+        Chromosome fittest = this.chromosomes[0];
 
-        // Loop through individuals to find fittest
-        for (Permutation permutation : this.permutations) {
-            if (fittest.getFitnessScore() <= permutation.getFitnessScore()) {
-                fittest = permutation;
+        // Loop through chromosomes to find fittest
+        for (Chromosome chromosome : this.chromosomes) {
+            if (fittest.getFitness() <= chromosome.getFitness()) {
+                fittest = chromosome;
             }
         }
 
         return fittest;
     }
 
-    public void setPermutationAt(int index, Permutation permutation) {
-        this.permutations[index] = permutation;
+    public void setChromosome(int index, Chromosome chromosome) {
+        this.chromosomes[index] = chromosome;
     }
 
-    public Permutation getPermutationAt(int index) {
-        return this.permutations[index];
+    public Chromosome getChromosome(int index) {
+        return this.chromosomes[index];
     }
 
     public int getPopulationSize() {
-        return this.permutations.length;
+        return this.chromosomes.length;
     }
 }

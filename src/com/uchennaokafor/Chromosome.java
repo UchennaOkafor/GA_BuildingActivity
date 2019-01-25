@@ -2,10 +2,7 @@ package com.uchennaokafor;
 
 import java.util.*;
 
-/**
- * Represents a chromosome
- */
-public class Permutation {
+public class Chromosome {
     private final int MAX_BUILDINGS = 8;
     private final int MAX_ACTIVITIES = 7;
 
@@ -14,12 +11,12 @@ public class Permutation {
     private List<Integer> availableBuildings;
     private List<Integer> availableActivities;
 
-    public Permutation() {
+    public Chromosome() {
         initialize();
         generateRandomGenes();
     }
 
-    public Permutation(Gene[] genes) {
+    public Chromosome(Gene[] genes) {
         initialize();
         this.genes = genes;
 
@@ -70,20 +67,20 @@ public class Permutation {
     }
 
     private void generateRandomGenes() {
-        List<Gene> chromosome = new ArrayList<>();
+        List<Gene> generatedGenes = new ArrayList<>();
         Gene gene;
 
         do {
             gene = generateUniqueGene();
             if (gene != null) {
-                chromosome.add(gene);
+                generatedGenes.add(gene);
             }
         } while (gene != null);
 
-        this.genes = chromosome.toArray(new Gene[]{});
+        this.genes = generatedGenes.toArray(new Gene[]{});
     }
 
-    public boolean isPermutationValid() {
+    public boolean isChromosomeValid() {
         if (this.genes.length != MAX_ACTIVITIES) {
             return false;
         }
@@ -113,36 +110,26 @@ public class Permutation {
         return new Gene(randBuilding, randActivity);
     }
 
-    public int getFitnessScore() {
-        int score = 0;
-
-        for (Gene gene : this.genes) {
-            score += FitnessCalc.getGeneScore(gene);
-        }
-
-        return score;
+    public int getFitness() {
+        return FitnessCalc.getChromosomeFitness(this);
     }
 
     public Gene[] getGenes() {
         return this.genes;
     }
 
-    public Gene getGene(int index) {
-        return this.genes[index];
-    }
-
-    public Permutation deepClone() {
+    public Chromosome deepClone() {
         Gene[] genesCopy = new Gene[this.genes.length];
 
         for (int i = 0; i < this.genes.length; i++) {
             genesCopy[i] = this.genes[i].deepClone();
         }
 
-        return new Permutation(genesCopy);
+        return new Chromosome(genesCopy);
     }
 
     @Override
     public String toString() {
-        return String.format("Permutation {Genes=%s}", Arrays.toString(genes));
+        return String.format("Chromosome {Genes=%s}", Arrays.toString(genes));
     }
 }

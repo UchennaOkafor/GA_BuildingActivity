@@ -14,7 +14,7 @@ public class Algorithm {
 
         // Keep our best individual
         if (ELITISM) {
-            newPopulation.setPermutationAt(0, pop.getFittest());
+            newPopulation.setChromosome(0, pop.getFittest());
         }
 
         int elitismOffset;
@@ -28,27 +28,27 @@ public class Algorithm {
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i+=2) {
             int[] parentIndexes = susSelection(pop, 2);
 
-            Permutation parent1 = pop.getPermutationAt(parentIndexes[0]);
-            Permutation parent2 = pop.getPermutationAt(parentIndexes[1]);
+            Chromosome parent1 = pop.getChromosome(parentIndexes[0]);
+            Chromosome parent2 = pop.getChromosome(parentIndexes[1]);
 
-            Permutation[] children = crossover(parent1, parent2);
+            Chromosome[] children = crossover(parent1, parent2);
 
-            newPopulation.setPermutationAt(i, children[0]);
+            newPopulation.setChromosome(i, children[0]);
 
             if (i + 1 != newPopulation.getPopulationSize()) {
-                newPopulation.setPermutationAt(i + 1, children[1]);
+                newPopulation.setChromosome(i + 1, children[1]);
             }
         }
 
         // Mutate population
         for (int i = elitismOffset; i < newPopulation.getPopulationSize(); i++) {
-            mutate(newPopulation.getPermutationAt(i));
+            mutate(newPopulation.getChromosome(i));
         }
 
         return newPopulation;
     }
 
-    private static Permutation[] crossover(Permutation parent1, Permutation parent2) {
+    private static Chromosome[] crossover(Chromosome parent1, Chromosome parent2) {
         int genesLength = parent1.getGenes().length;
 
         List<Gene> parent1Genes = Arrays.asList(parent1.getGenes());
@@ -61,7 +61,11 @@ public class Algorithm {
         Gene[] child1Genes = new Gene[genesLength];
         Gene[] child2Genes = new Gene[genesLength];
 
-        //Uses uniform crossover to select genes for crossover
+        /*
+          Uses the uniform crossover operator to select genes for crossover.
+          The genes were previously sorted by the activity allele, which ensures that
+          during crossover, each gene will have a unique activity alleles for each chromosome/individual
+         */
         for (int i = 0; i < genesLength; i++) {
             if (Math.random() <= UNIFORM_RATE) {
                 child1Genes[i] = parent1Genes.get(i).deepClone();
@@ -72,18 +76,18 @@ public class Algorithm {
             }
         }
 
-        return new Permutation[] {
-            new Permutation(child1Genes),
-            new Permutation(child2Genes)
+        return new Chromosome[] {
+            new Chromosome(child1Genes),
+            new Chromosome(child2Genes)
         };
     }
 
 
-    private static void mutate(Permutation permutation) {
+    private static void mutate(Chromosome chromosome) {
         // Loop through genes and randomly mutate a gene
-        for (int i = 0; i < permutation.getGenes().length; i++) {
+        for (int i = 0; i < chromosome.getGenes().length; i++) {
             if (Math.random() <= MUTATION_RATE) {
-                permutation.mutateGene(i);
+                chromosome.mutateGene(i);
             }
         }
     }
@@ -94,7 +98,7 @@ public class Algorithm {
         double totalFitnessSum = 0.0;
 
         for (int i = 0; i < pop.getPopulationSize(); i++) {
-            double fitness = (double) pop.getPermutationAt(i).getFitnessScore();
+            double fitness = (double) pop.getChromosome(i).getFitness();
 
             populationFitnessValues[i] = fitness;
             totalFitnessSum += fitness;
