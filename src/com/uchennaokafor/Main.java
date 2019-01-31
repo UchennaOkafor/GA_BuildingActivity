@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
         final int POPULATION_SIZE = 100;
-        final int MAX_GEN_NO_IMPROVEMENTS = 15;
+        final int MAX_GEN_NO_IMPROVEMENTS = 20;
 
         Population population = new Population(POPULATION_SIZE, true);
         Chromosome fittest = population.getFittest().deepClone();
@@ -25,6 +25,7 @@ public class Main {
                 fittest = population.getFittest().deepClone();
             }
 
+            //Counts how many generations has passed with no improvements
             if (newPopulation.getFittest().getFitness() ==
                     population.getFittest().getFitness()) {
                 noImprovementCounter++;

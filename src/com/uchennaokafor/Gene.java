@@ -16,10 +16,6 @@ public class Gene {
         return activity;
     }
 
-    public void setActivity(int activity) {
-        this.activity = activity;
-    }
-
     public int getBuilding() {
         return building;
     }
