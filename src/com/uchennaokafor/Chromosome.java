@@ -43,7 +43,15 @@ public class Chromosome {
      * Mutates a gene using random resetting operation
      */
     public void mutateGene(int index) {
-        int randBuilding = rand.nextInt(MAX_BUILDINGS);
+        int currentBuildingValue = genes[index].getBuilding();
+        int randBuilding;
+
+        //Makes sure that the randomly generated building value
+        //is the same as the current gene's building value
+        do  {
+            randBuilding = rand.nextInt(MAX_BUILDINGS);
+        } while (randBuilding == currentBuildingValue);
+
         genes[index].setBuilding(randBuilding);
     }
 
